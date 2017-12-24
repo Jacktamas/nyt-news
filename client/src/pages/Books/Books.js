@@ -3,21 +3,25 @@ import Jumbotron from "../../components/Jumbotron";
 import DeleteBtn from "../../components/DeleteBtn";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
-import { Input, TextArea, FormBtn } from "../../components/Form";
+import { Input, FormBtn } from "../../components/Form";
 import API from "../../utils/API.js";
 
 class Books extends Component {
   // Initialize this.state.books as an empty array
   state = {
-    books: []
+    books: [],
+    title: '',
+    author: '',
+    synopsis: ''
   };
 
   // Add code here to get all books from the database and save them to this.state.books
   componentWillMount(){
-    this.loadBooks();
+    this.loadBooks(this);
   };
 
   loadBooks = () => {
+    console.log('books loaded');
     API.getBooks()
     .then(books => {
       this.setState({
@@ -27,7 +31,7 @@ class Books extends Component {
         synopsis: ''
       });
     })
-  }
+  };
 
   handleFormSubmit = event => {
     event.preventDefault();
@@ -38,15 +42,16 @@ class Books extends Component {
     })
     .catch(err => {
       console.log(err)
-    })
+    });
+    this.loadBooks();
+  };
 
-  }
   handleOnChange = (event) => {
     const {name, value} = event.target;
     this.setState({
       [name]: value
-    })
-  }
+    });
+  };
 
   render() {
     return (
@@ -57,9 +62,7 @@ class Books extends Component {
               <h1>What Books Should I Read?</h1>
             </Jumbotron>
             <form>
-              <Input onChange={this.state.handleOnChange} name="title" placeholder="Title (required)" />
-              <Input name="author" placeholder="Author (required)" />
-              <TextArea name="synopsis" placeholder="Synopsis (Optional)" />
+              <Input onChange={this.handleOnChange} name="search" placeholder="Title (required)" />
               <FormBtn onClick={this.handleFormSubmit}>Submit Book</FormBtn>
             </form>
           </Col>
